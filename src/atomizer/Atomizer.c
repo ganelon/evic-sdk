@@ -347,7 +347,7 @@ static void Atomizer_NegativeFeedback(uint32_t unused) {
 
 	if(curVolts < Atomizer_targetVolts) {
 		if(Atomizer_curState == POWERON_BUCK) {
-			if(Atomizer_curCmr == 479) {
+			if(Atomizer_curCmr == 959) {
 				// Reached maximum for buck, switch to boost
 				nextState = POWERON_BOOST;
 			}
@@ -356,15 +356,15 @@ static void Atomizer_NegativeFeedback(uint32_t unused) {
 				Atomizer_curCmr++;
 			}
 		}
-		else if(Atomizer_curCmr > 80) {
-			// Boost duty cycle must be greater than 80
+		else if(Atomizer_curCmr > 160) {
+			// Boost duty cycle must be greater than 160
 			// In boost mode, decreased duty cycle = increased voltage
 			Atomizer_curCmr--;
 		}
 	}
 	else {
 		if(Atomizer_curState == POWERON_BOOST) {
-			if(Atomizer_curCmr == 479) {
+			if(Atomizer_curCmr == 959) {
 				// Reached minimum for boost, switch to buck
 				nextState = POWERON_BUCK;
 			}
@@ -374,8 +374,8 @@ static void Atomizer_NegativeFeedback(uint32_t unused) {
 			}
 		}
 		else {
-			if(Atomizer_curCmr <= 10) {
-				// Buck duty cycles below 10 are forced to zero
+			if(Atomizer_curCmr <= 20) {
+				// Buck duty cycles below 20 are forced to zero
 				Atomizer_curCmr = 0;
 			}
 			else {
@@ -492,9 +492,9 @@ void Atomizer_Control(uint8_t powerOn) {
 			return;
 		}
 
-		// Start from buck with duty cycle 10
+		// Start from buck with duty cycle 20
 		Atomizer_error = OK;
-		Atomizer_curCmr = 10;
+		Atomizer_curCmr = 20;
 		PWM_SET_CMR(PWM0, ATOMIZER_PWMCH_BUCK, Atomizer_curCmr);
 		Atomizer_ConfigureConverters(1, 0);
 		ATOMIZER_TIMER_WARMUP_RESET();
